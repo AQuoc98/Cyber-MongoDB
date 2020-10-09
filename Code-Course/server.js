@@ -1,29 +1,25 @@
 const mongoose = require("mongoose");
+const Course = require("./models/courses");
 
 mongoose
-  .connect("mongodb://localhost:27017/fs05-courses", { useNewUrlParser: true })
+  .connect("mongodb://localhost:27017/Courses", { useNewUrlParser: true })
   .then(() => console.log("Connected succesfully"))
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));
 
-// Tạo Schema
-const CourseSchema = new mongoose.Schema({
-  name: String,
-  author: String,
-  tags: [String], //['NodejS', "mongo"]
-  date: { type: Date, default: Date.now() },
-  isPublished: Boolean,
-  price: Number
+const newCourse = new Course({
+  name: "MongoDB",
+  author: "Ken",
+  tags: ["MongoDB", "Mongoose"],
+  isPublished: true,
+  price: 10,
 });
 
-const Course = mongoose.model("Course", CourseSchema);
+newCourse.save().then((course) => console.log(course));
 
-const course_1 = new Course({
-  name: "Web",
-  author: "Nguyen Van A",
-  tags: ["HTML", "CSS", "JS"],
-  isPublished: false,
-  price: 20
-});
+
+
+
+
 
 // ES6 - promise
 // course_1

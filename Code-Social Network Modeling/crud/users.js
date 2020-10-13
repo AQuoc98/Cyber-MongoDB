@@ -1,62 +1,70 @@
 const mongoose = require("mongoose");
-const { User } = require('../model/User');
 
-mongoose.connect('mongodb://localhost:27017/social-network', { useNewUrlParser: true })
-  .then(() => console.log("Connected successfully"))
-  .catch(err => console.log(err));
+// Load model
+const { User } = require("../models/users");
+const { Profile } = require("../models/profiles");
+const { Group } = require("../models/groups");
+const { Post } = require("../models/posts");
+const { Comment } = require("../models/comments");
+const { Like } = require("../models/likes");
 
-// CRUD
+mongoose
+  .connect("mongodb://localhost:27017/social-network", {
+    useNewUrlParser: true,
+  })
+  .then(console.log("Connect Successfully"))
+  .catch(console.log);
 
-// create user
-function createUser(username, password, email, fullName) {
-  User.findOne({ username })
-    .then(user => {
-      if (user) return Promise.reject({ message: "username exists" })
-
+//   Create User
+function createUser(username, password, email, fullName, dateOfBirth) {
+  User.findOne()
+    .or([{ username }, { email }])
+    .then((user) => {
+      if (user) return console.log("Username or Email exist");
       const newUser = new User({
-        userame, password, email, fullName
-      })
-      return newUser.save()
+        username,
+        password,
+        email,
+        fullName,
+        dateOfBirth,
+      });
+      return newUser.save();
+    })
+    .then((user) => user && console.log(user))
+    .catch(console.log);
+}
+
+// Update User
+function updateUser(id, username, password, email, fullName, dateOfBirth) {
+  User.findById(id)
+    .then((user) => {
+      if (!user) return console.log("User does not exist");
+      user.username = username;
+      user.password = password;
+      user.email = email;
+      user.fullName = fullName;
+      user.dateOfBirth = dateOfBirth;
+
+      return user.save();
     })
     .then(console.log)
-    .catch(console.log)
+    .catch(console.log);
 }
 
-createUser("user_3", "user_3", "user3@gmail.com", "User 3")
-
-// read danh sach
-function getUsers() {
-  User.find()
-    .then(console.log)
-    .catch(console.log)
+// Delete User
+function deleteUser(id){
+    User.findByIdAndRemove(id).then(console.log).catch(console.log)
 }
 
-// read by id
-function getUserById(userId) {
-  User.findById(userId)
-    .then(user => {
-      if (!user) return Promise.reject({ message: "User not found" })
+// createUser("Ken", "123", "ken@gmail.com", "ndaq", "03/03/1998");
 
-      console.log(user)
-    })
-    .catch(console.log)
-}
+// updateUser(
+//   "5f85c808ab9905355c4d414b",
+//   "anhquoc",
+//   "anhquoc",
+//   "anhquoc@gmail.com",
+//   "anhquoc",
+//   "10/03/2020"
+// );
 
-// update by id
-function updateUser(user) { // user = {username: "sdnfks", password: "djnfkdnsj", ..., ...}
-  User.findById(user._id)
-    .then(founduser => {
-      if (!founduser) return Promise.reject({ message: "User not found" })
-
-      founduser.name = user.name
-      founduser.password = user.password
-      founduser.fullName = user.fullName
-      founduser.email = user.email
-      return founduser.save()
-    })
-    .then(console.log)
-    .catch(console.log)
-}
-
-
-// delete by id
+// deleteUser("5f85c808ab9905355c4d414b")
